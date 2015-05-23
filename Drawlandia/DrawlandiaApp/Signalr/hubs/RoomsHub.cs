@@ -13,9 +13,12 @@ namespace DrawlandiaApp.Signalr.hubs
         private List<Room> rooms = new List<Room>();
         public void GetAllRooms()
         {
+            rooms.Add(new Room("maika", "1"));
+            rooms.Add(new Room("ti", "1"));
+            rooms.Add(new Room("sdagdfdfd", "1"));
             var jsonSerialiser = new JavaScriptSerializer();
             var jsonRooms = jsonSerialiser.Serialize(rooms);
-            Clients.Caller.initializeRooms(jsonRooms);
+            Clients.All.initializeRooms(jsonRooms);
         }
 
         public void GetRoomByName(string name)

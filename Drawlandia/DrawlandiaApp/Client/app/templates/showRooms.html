@@ -1,11 +1,24 @@
 ﻿<div>
     <div class="showRooms">
-        <div class="title">All rooms</div>
-        <ul class="rooms">
-            <li>
-                <div>Name of room</div>
-                <button class="joinBtn">Join</button>
-            </li>
+        <!--<div class="popupBody" id="joinPopup">
+        <div class="popupContainer">
+            <label for="pass"></label>
+            <input id="pass" type="password" />
+        </div>
+    </div>-->
+
+        <div class="topSide">
+            <div class="title">All rooms(<span id="roomCount"></span>)</div>
+            <button class="newRoomBtn" id="newRoomOpenBtn">New room</button>
+        </div>
+        <div id="newRoomPopup">
+            <label for="roomName">Name:</label>
+            <input id="roomName" type="text" />
+            <label for="roomPass">Password:</label>
+            <input id="roomPass" type="password" />
+            <button id="createRoomBtn" class="buttonWhite">Go</button>
+        </div>
+        <ul class="rooms" id="rooms">
         </ul>
     </div>
 </div>

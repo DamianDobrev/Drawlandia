@@ -2,7 +2,6 @@
 <head>
     <title>Drawlandia - Game</title>
     <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/game.css"/>
 </head>
 <body>
@@ -10,15 +9,17 @@
     <div class="main">
         <header class="mainHeader">
             <div class="logo">
-                <a href="#">Drawlandia</a>
+                <a href="?"><img src="images/logo.png" alt="Logo"/></a>
             </div>
             <div class="menu">
                 <a href="howtoplay.html">How to play</a>
                 <a href="faq.html">FAQ</a>
             </div>
         </header>
+        <!--<button id="testButton">TEST</button>-->
         <div id="view"></div>
-        <!--<canvas width="300" height="200" id="gameCanvas"></canvas>
+
+        <!--<canvas width="600" height="500" id="gameCanvas"></canvas>
         <div class="tools">
             <button id="brushColorBlack">Black brush</button>
             <button id="brushColorRed">Red brush</button>
@@ -29,8 +30,7 @@
 </div>
 
     <script src="Scripts/jquery-1.6.4.min.js"></script>
-    <script src="https://code.createjs.com/easeljs-0.8.0.min.js"></script>
     <script src="Scripts/jquery.signalR-2.2.0.min.js"></script>
-    <script src="../signalr/Hubs"></script>
+    <script src="../signalr/hubs"></script>
     <script src="app/js.js"></script>
 </body>

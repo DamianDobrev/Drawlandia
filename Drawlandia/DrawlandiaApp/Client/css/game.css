@@ -7,7 +7,17 @@
 }
 
 body {
-    background-color: #ffffff;
+    background-color: #5CD0F7;
+}
+
+.main {
+    width: 1000px;
+    margin: 60px auto 0;
+    height: 640px;
+    background: #E8F5FA;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+    border-radius: 40px;
+    position: relative;
 }
 
 .mainHeader {
@@ -20,11 +30,13 @@ body {
 
 .logo {
     width: 200px;
-    margin: 0 auto;
+    left: 50%;
+    top: 0;
+    margin: -40px 0 0 -100px;
     height: 50px;
-    padding: 10px;
-    border-bottom: 3px solid #8f5d96;
+    padding: 10px 0;
     text-align: center;
+    position: absolute;
 }
 
 .logo a {
@@ -48,12 +60,6 @@ body {
 
 .menu a:first-child{
     border-right: 2px solid #8f5d96;
-}
-
-.main {
-    width: 100%;
-    max-width: 960px;
-    margin: 0 auto;
 }
 
 .main canvas {
@@ -103,6 +109,7 @@ body {
     background: white;
     color: #6b3a72;
     margin: 0 auto;
+    outline: none;
 }
 
 .buttonWhite:hover {
@@ -115,3 +122,83 @@ body {
     color: #ffffff;
     margin: 0 0 10px 0;
 }
+
+.showRooms .title {
+    font-size: 24px;
+}
+
+.rooms li {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #8f5d96;
+    position: relative;
+    margin: 0 0 5px 0;
+}
+
+.rooms li button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    margin: -15px 0 0 0;
+    height: 30px;
+    padding: 0 20px;
+    background: #8f5d96;
+    color: white;
+    border: none;
+}
+
+.rooms li button:hover {
+    opacity: 0.9;
+    cursor: pointer;
+}
+
+.newRoomBtn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    margin: -15px 0 0 0;
+    height: 30px;
+    padding: 0 20px;
+    background: #8f5d96;
+    color: white;
+    border: none;
+}
+
+.newRoomBtn:hover {
+    opacity: 0.9;
+    cursor: pointer;
+}
+
+.topSide {
+    position: relative;
+    width: 100%;
+    margin: 20px 0;
+}
+
+#newRoomPopup {
+    width: 100%;
+    padding: 20px 13px;
+    margin: 0 0 20px 0;
+    background: #8f5d96;
+    z-index: 100;
+    display: none;
+}
+
+#newRoomPopup label {
+    color: white;
+    margin: 0 0 0 10px;
+    font-size: 15px;
+}
+#newRoomPopup input {
+    width: 200px;
+    border: none;
+    height: 30px;
+    margin: 0 5px;
+    padding: 0 6px;
+    outline: none;
+}
+
+#newRoomPopup input:focus {
+    box-shadow: 0 0 10px #6b3a72;
+}
+

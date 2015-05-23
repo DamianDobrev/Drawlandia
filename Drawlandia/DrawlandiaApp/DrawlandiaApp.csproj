@@ -82,8 +82,10 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Client\app\templates\game.html" />
     <Content Include="Client\app\templates\insertName.html" />
     <Content Include="Client\app\templates\showRooms.html" />
+    <Content Include="Client\images\logo.png" />
     <Content Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -96,7 +98,6 @@
     <None Include="Client\Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Client\app\js.js" />
     <Content Include="Client\app\rooms.js" />
-    <Content Include="Client\css\style.css" />
     <Content Include="Client\Scripts\jquery-1.6.4.js" />
     <Content Include="Client\Scripts\jquery-1.6.4.min.js" />
     <Content Include="Client\Scripts\jquery.signalR-2.2.0.js" />
@@ -106,7 +107,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Game.cs" />
+    <Compile Include="Models\Game.cs" />
     <Compile Include="Models\Player.cs" />
     <Compile Include="Models\State.cs" />
     <Compile Include="Signalr\hubs\GameHub.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="Signalr\hubs\RoomsHub.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

@@ -1,9 +1,10 @@
 ﻿$(function () {
     var game = $.connection.gameHub;
+    var rooms = $.connection.roomsHub;
 
     // GAME FUNCTION
 
-    function openGame(parameters) {
+    function openGame() {
         var context = document.getElementById('gameCanvas').getContext("2d");
 
         var paint = false;
@@ -47,7 +48,6 @@
 
         $('#gameCanvas').mousedown(function (e) {
             var canvasPos = $('#gameCanvas').offset();
-            console.log(canvasPos.left);
             mousePosX = e.pageX - this.offsetLeft - Math.round(canvasPos.left);
             mousePosY = e.pageY - this.offsetTop - Math.round(canvasPos.top);
 
@@ -56,7 +56,6 @@
         });
         $('#gameCanvas').mousemove(function (e) {
             var canvasPos = $('#gameCanvas').offset();
-            console.log(canvasPos.left);
             mousePosX = e.pageX - this.offsetLeft - Math.round(canvasPos.left);
             mousePosY = e.pageY - this.offsetTop - Math.round(canvasPos.top);
 
@@ -85,14 +84,31 @@
         $('#clearCanvas').click(function (e) {
             game.server.clear();
         });
+
+        //functions called by server
+
+        game.client.drawRemote = function (xRemote, yRemote, dragRemote, colorCurRemote) {
+            addClick(xRemote, yRemote, dragRemote, colorCurRemote);
+            redraw();
+        };
+        game.client.clearCanvas = function () {
+            context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+            clickX = new Array();
+            clickY = new Array();
+            clickDrag = new Array();
+            colors = new Array();
+            alert("CLEAR CANVAS CALLED FROM SERVER");
+        }
     }
 
     $.connection.hub.start().done(function () {
         var name;
 
         //Enter name
-
         $('#view').load('app/templates/insertName.html', function () {
+
+            //events
+
             $('#insertNameBtn').click(function () {
                 var nameInput = $('#name');
                 if (nameInput.val()) {
@@ -105,42 +121,47 @@
         });
 
         //Show rooms when name is set
-
         function showRooms() {
             $('#view').load('app/templates/showRooms.html', function () {
-                
+
+                rooms.server.getAllRooms();
+
+                //events
+
+                $('#newRoomOpenBtn').click(function () {
+                    var popup = $('#newRoomPopup');
+                    if (popup.css('display') == 'none') {
+                        popup.show();
+                    } else {
+                        popup.hide();
+                    }
+                });
             });
         }
-
-        //Join to a room
-
-        var roomName;
-        var roomPass;
-
-        //game.server.registerNewPlayer(name);
-
-        // Game function
-
-        //openGame();
-
-
-        
     });
 
-    // ----------------------------
-    // functions called from server
-    // ----------------------------
+    //---------------
+    //other functions
+    //---------------
 
-    game.client.drawRemote = function (xRemote, yRemote, dragRemote, colorCurRemote) {
-        addClick(xRemote, yRemote, dragRemote, colorCurRemote);
-        redraw();
-    };
-
-    game.client.clearCanvas = function () {
-        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-        clickX = new Array();
-        clickY = new Array();
-        clickDrag = new Array();
-        colors = new Array();
+    function setRoomCounter(count) {
+        $('#roomCount').text(count);
     }
+
+    //--------------------------
+    //functions called by server
+    //--------------------------
+
+    rooms.client.initializeRooms = function (roomsJson) {
+        var roomsArray = JSON.parse(roomsJson);
+        $('#rooms').html('');
+        roomsArray.forEach(function (room) {
+            $('#rooms').append($('<li>')
+                .append($('<div>').text(room.Name))
+                .append($('<button class="joinBtn">').text('Join')));
+        });
+        setRoomCounter(roomsArray.length);
+    }
+
+    
 });
