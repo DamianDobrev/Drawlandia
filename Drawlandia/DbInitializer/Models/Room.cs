@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DrawlandiaApp.Models
+namespace DbInitializer.Models
 {
     public class Room
     {
-        public Room()
-        {
-        }
-
         public Room(string name, string password)
         {
             this.Name = name;
             this.Password = password;
-            this.State = RoomState.NotStarted;
+            this.State = State.NotStarted;
         }
 
         public int Id { get; set; }
@@ -24,6 +20,6 @@ namespace DrawlandiaApp.Models
 
         public ICollection<Player> Players { get; set; }
 
-        public RoomState State { get; set; }
+        public State State { get; set; }
     }
 }

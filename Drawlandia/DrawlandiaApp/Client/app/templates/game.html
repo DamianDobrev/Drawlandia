@@ -1,9 +1,96 @@
-﻿<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title></title>
-</head>
-<body>
-
-</body>
-</html>
+﻿<div>
+    <div class="game">
+        <div class="topSide">
+            <div class="title">Opened game</div>
+            <button class="fancyYellowBtn applyTransition" id="newRoomOpenBtn">Start game</button>
+            <div id="currentWord"></div>
+            <div id="timer">30</div>
+        </div>
+        <aside id="players">
+            <div class="whiteContainer">
+                <ul>
+                    <li><span>43</span><span>Damian Dobrev</span></li>
+                    <li class="isHisTurn"><span>43</span><span>Melon Destructor oror oro ror or</span></li>
+                    <li><span>43</span><span>Player3</span></li>
+                </ul>
+            </div>
+            <button class="fancyYellowBtn applyTransition" id="leaveRoomBtn">&lt; Leave room</button>
+        </aside>
+        <div id="game">
+            <canvas id="gameCanvas" width="540" height="330" class="whiteContainer"></canvas>
+            <div class="instruments">
+                <ul class="colors">
+                    <li class="whiteClr selectedClr"><button></button></li>
+                    <li class="blueClr"><button></button></li>
+                    <li class="greenClr"><button></button></li>
+                    <li class="redClr"><button></button></li>
+                    <li class="yellowClr"><button></button></li>
+                    <li class="greyClr"><button></button></li>
+                    <li class="brownClr"><button></button></li>
+                    <li class="blackClr"><button></button></li>
+                </ul>
+                <ul class="size">
+                    <li class="xs"><button></button></li>
+                    <li class="s selectedSize"><button></button></li>
+                    <li class="m"><button></button></li>
+                    <li class="l"><button></button></li>
+                    <li class="xl"><button></button></li>
+                    <li class="xxl"><button></button></li>
+                </ul>
+                <button id="clearCanvas" class="applyTransition">Clear</button>
+            </div>
+        </div>
+        <aside id="chat">
+            <div class="whiteContainer">
+                <div id="chatMessages">
+                    <ul>
+                        <li class="playerName">Melon Destrucor</li>
+                        <li>dog</li>
+                        <li>cat</li>
+                        <li>plane</li>
+                        <li class="playerName">This should be at </li>
+                        <li>bottom</li>
+                        <li>of</li>
+                        <li>melon</li>
+                        <li class="playerName">Melon Destrucor</li>
+                        <li>dog</li>
+                        <li>cat</li>
+                        <li>plane</li>
+                        <li class="playerName">This should be at </li>
+                        <li>bottom</li>
+                        <li>of</li>
+                        <li>melon</li>
+                        <li class="playerName">Melon Destrucor</li>
+                        <li>dog</li>
+                        <li>cat</li>
+                        <li>plane</li>
+                        <li class="playerName">This should be at </li>
+                        <li>bottom</li>
+                        <li>of</li>
+                        <li>melon</li>
+                        <li class="playerName">Melon Destrucor</li>
+                        <li>dog</li>
+                        <li>cat</li>
+                        <li>plane</li>
+                        <li class="playerName">This should be at </li>
+                        <li>bottom</li>
+                        <li>of</li>
+                        <li>melon</li>
+                        <li class="playerName">Melon Destrucor</li>
+                        <li>dog</li>
+                        <li>cat</li>
+                        <li>plane</li>
+                        <li class="playerName">This should be at </li>
+                        <li>bottom</li>
+                        <li>of</li>
+                        <li>melon</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="inputMsg">
+                <input id="chatInput" type="text" />
+                <button class="sendMsgBtn applyTransition"></button>
+            </div>
+        </aside>
+    </div>
+</div>

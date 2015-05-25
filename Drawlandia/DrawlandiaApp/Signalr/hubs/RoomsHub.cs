@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Script.Serialization;
 using DrawlandiaApp.Models;
@@ -10,101 +11,173 @@ namespace DrawlandiaApp.Signalr.hubs
 {
     public class RoomsHub : Hub
     {
-        private List<Room> rooms = new List<Room>();
+        DrawlandiaContext db = new DrawlandiaContext();
+
         public void GetAllRooms()
         {
-            rooms.Add(new Room("maika", "1"));
-            rooms.Add(new Room("ti", "1"));
-            rooms.Add(new Room("sdagdfdfd", "1"));
+            var rooms = db.Rooms.OrderByDescending(r => r.Id)
+                .Select(r => new
+                {
+                    Id = r.Id,
+                    Name = r.Name,
+                    Players = r.Players,
+                    HasPassword = !String.IsNullOrEmpty(r.Password)
+                });
+            var jsonSerialiser = new JavaScriptSerializer();
+            var jsonRooms = jsonSerialiser.Serialize(rooms);
+            Clients.Caller.initializeRooms(jsonRooms);
+        }
+
+        public void UpdateRoomsToAll()
+        {
+            var rooms = db.Rooms.OrderByDescending(r => r.Id)
+                .Select(r => new
+                {
+                    Id = r.Id,
+                    Name = r.Name,
+                    Players = r.Players,
+                    HasPassword = !String.IsNullOrEmpty(r.Password)
+                });
             var jsonSerialiser = new JavaScriptSerializer();
             var jsonRooms = jsonSerialiser.Serialize(rooms);
             Clients.All.initializeRooms(jsonRooms);
         }
 
-        public void GetRoomByName(string name)
+        public void GoToRoom(int id)
         {
-            var jsonSerialiser = new JavaScriptSerializer();
-            if (rooms.Any(room => room.Name == name))
+            var rooms = db.Rooms;
+            var ourRoom = rooms.FirstOrDefault(r => r.Id == id);
+
+            //Check if room exists
+            if (ourRoom == null)
             {
-                var jsonRooms = jsonSerialiser.Serialize(rooms.FirstOrDefault(room => room.Name == name));
-                Clients.Caller.initializeRooms(jsonRooms);
+                Clients.Caller.errorWithMsg("No such room.");
+                return;
             }
+
+            var jsonSerialiser = new JavaScriptSerializer();
+            var outputRoom = new
+                {
+                    Id = ourRoom.Id,
+                    Name = ourRoom.Name,
+                    Players = ourRoom.Players,
+                    HasPassword = !String.IsNullOrEmpty(ourRoom.Password)
+                };
+
+            var outputJson = jsonSerialiser.Serialize(outputRoom);
+            Clients.Caller.initRoom(outputJson);
         }
 
-        public Task CreateRoom(string name, string password, string creatorName)
+        public void CreateRoom(string name, string password, string creatorName)
         {
+            var rooms = db.Rooms;
+            if (String.IsNullOrEmpty(creatorName))
+            {
+                Clients.Caller.errorWithMsg("Invalid name, please refresh the page.");
+                return;
+            }
+
             if (rooms.Any(room => room.Name == name))
             {
-                return null;
+                Clients.Caller.errorWithMsg("Sorry, but it seems like there is already a room with that name :(");
+                return;
             }
 
             var roomToCreate = new Room(name, password);
 
-            //First player is creator, if first player leaves -> the second one becomes the creator
-
-            roomToCreate.Players.Add(new Player(Context.ConnectionId, creatorName));
-
+            var player = new Player(Context.ConnectionId, creatorName);
+            roomToCreate.Players = new List<Player>();
+            roomToCreate.Players.Add(player);
             rooms.Add(roomToCreate);
-            return Groups.Add(Context.ConnectionId, name); 
+            db.Rooms.Add(roomToCreate);
+            db.SaveChanges();
+
+            Groups.Add(Context.ConnectionId, name);
+
+            var roomOutput = rooms.FirstOrDefault(r => r.Name == roomToCreate.Name);
+            GoToRoom(roomOutput.Id);
+
+            UpdateRoomsToAll();
         }
 
-        public Task JoinRoom(string name, string password, string playerName)
+        public void JoinRoom(int roomId, string password, string playerName)
         {
-            var roomToJoin = rooms.FirstOrDefault(room => room.Name == name);
+            var rooms = db.Rooms;
+            var players = db.Players;
 
-            //Check if room exists
-            if (roomToJoin == null)
+            var roomToJoin = rooms.FirstOrDefault(room => room.Id == roomId);
+
+            //Check if player exists in db
+            if (players.Any(p => p.ConnectionId == Context.ConnectionId))
             {
-                return null;
+                Clients.Caller.errorWithMsg("You are already in a room.");
+                return;
             }
 
-            //Check if game has started
-            if (roomToJoin.State == State.Started)
+            //Check player name
+            if (String.IsNullOrEmpty(playerName))
             {
-                return null;
+                Clients.Caller.errorWithMsg("Player name is empty.");
+                return;
             }
 
-            //Authenticate
-            if (roomToJoin.Password != password)
+            //Check if room exists or game started
+            if (roomToJoin == null || roomToJoin.State == RoomState.Started)
             {
-                return null;
+                Clients.Caller.errorWithMsg("The room no longer exists or the game has started.");
+                return;
             }
 
-            roomToJoin.Players.Add(new Player(Context.ConnectionId, playerName));
-            return Groups.Add(Context.ConnectionId, name); 
+            //Authorization
+            if (!String.IsNullOrEmpty(roomToJoin.Password) && roomToJoin.Password != password)
+            {
+                Clients.Caller.errorWithMsg("Wrong password.");
+                return;
+            }
+
+            var playerToBeJoined = new Player(Context.ConnectionId, playerName);
+            roomToJoin.Players = new List<Player>();
+            roomToJoin.Players.Add(playerToBeJoined);
+            Groups.Add(Context.ConnectionId, roomToJoin.Name);
+            db.SaveChanges();
+
+            GoToRoom(roomToJoin.Id);
         }
 
-        public Task LeaveRoom(string roomName)
+        public void LeaveRoom(int roomId)
         {
-            var roomToLeave = rooms.FirstOrDefault(room => room.Name == roomName);
+            var roomToLeave = db.Rooms.FirstOrDefault(room => room.Id == roomId);
 
             //Check if room exists
             if (roomToLeave == null)
             {
-                return null;
+                Clients.Caller.errorWithMsg("No such room.");
+                return;
             }
 
             //Check if game has started
-            if (roomToLeave.State == State.Started)
+            if (roomToLeave.State == RoomState.Started)
             {
-                return null;
+                Clients.Caller.errorWithMsg("You can't leave a game that has already started.");
+                return;
             }
 
             //Leave
             var playerLeaving = roomToLeave.Players.FirstOrDefault(pl => pl.ConnectionId == Context.ConnectionId);
-
             roomToLeave.Players.Remove(playerLeaving);
-            return Groups.Remove(Context.ConnectionId, roomName);
+            Groups.Remove(Context.ConnectionId, roomToLeave.Name);
+
+            GetAllRooms();
         }
 
-        public void StartGame(string roomName)
-        {
-            var roomToStart = rooms.FirstOrDefault(room => room.Name == roomName);
+        //public void StartGame(string roomName)
+        //{
+        //    var roomToStart = rooms.FirstOrDefault(room => room.Name == roomName);
 
-            if (roomToStart != null && roomToStart.Players[0].ConnectionId == Context.ConnectionId)
-            {
-                roomToStart.State = State.Started;
-            }
-        }
+        //    //if (roomToStart != null && roomToStart.Players[0].ConnectionId == Context.ConnectionId)
+        //    //{
+        //    //    roomToStart.State = State.Started;
+        //    //}
+        //}
     }
 }

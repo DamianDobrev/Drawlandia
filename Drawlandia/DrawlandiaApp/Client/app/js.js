@@ -1,6 +1,7 @@
 ﻿$(function () {
     var game = $.connection.gameHub;
     var rooms = $.connection.roomsHub;
+    var name;
 
     // GAME FUNCTION
 
@@ -43,7 +44,7 @@
                 context.stroke();
             }
         }
-        
+
         //mouse interaction functions
 
         $('#gameCanvas').mousedown(function (e) {
@@ -102,8 +103,6 @@
     }
 
     $.connection.hub.start().done(function () {
-        var name;
-
         //Enter name
         $('#view').load('app/templates/insertName.html', function () {
 
@@ -119,49 +118,114 @@
                 }
             });
         });
-
-        //Show rooms when name is set
-        function showRooms() {
-            $('#view').load('app/templates/showRooms.html', function () {
-
-                rooms.server.getAllRooms();
-
-                //events
-
-                $('#newRoomOpenBtn').click(function () {
-                    var popup = $('#newRoomPopup');
-                    if (popup.css('display') == 'none') {
-                        popup.show();
-                    } else {
-                        popup.hide();
-                    }
-                });
-            });
-        }
     });
 
-    //---------------
-    //other functions
-    //---------------
+    //Show rooms when name is set
+    function showRooms() {
+        $('#view').load('app/templates/showRooms.html', function () {
+
+            rooms.server.getAllRooms();
+
+            //events
+
+            $('#newRoomOpenBtn').click(function () {
+                var popup = $('#newRoomPopup');
+                if (popup.css('display') == 'none') {
+                    popup.show();
+                } else {
+                    closePopups();
+                }
+            });
+
+            $('.closePopupBtn').click(function () {
+                closePopups();
+            });
+
+            $('#createRoomBtn').click(function () {
+                var roomName = $('#roomName').val();
+                var roomPass = $('#roomPass').val();
+
+                //create room in db
+                rooms.server.createRoom(roomName, roomPass, name);
+            });
+
+        });
+    }
 
     function setRoomCounter(count) {
         $('#roomCount').text(count);
     }
 
-    //--------------------------
-    //functions called by server
-    //--------------------------
+    rooms.client.alertNew = function () {
+        alert("AlertNew func");
+    }
+
+    rooms.client.errorWithMsg = function (msg) {
+        alert(msg);
+    }
 
     rooms.client.initializeRooms = function (roomsJson) {
         var roomsArray = JSON.parse(roomsJson);
         $('#rooms').html('');
         roomsArray.forEach(function (room) {
+
+            //check password protection
+            var hasPass = false;
+            if (room.HasPassword) {
+                hasPass = true;
+            }
+
+            //insert html
             $('#rooms').append($('<li>')
-                .append($('<div>').text(room.Name))
-                .append($('<button class="joinBtn">').text('Join')));
+                .append($('<div>').text(room.Name + ' -> has pass: ' + hasPass))
+                .append($('<button class="joinBtn fancyYellowBtn applyTransition" data-id="' + room.Id + '" data-has-pass="' + hasPass + '">').text('Join')));
+
         });
+
+        //events
+        $('.joinBtn').click(function (e) {
+            var roomToJoinId = $(this).attr('data-id');
+            var hasPassword = $(this).attr('data-has-pass');
+            if (JSON.parse(hasPassword)) {
+                var popup = $('#joinPopup');
+                if (popup.css('display') == 'none') {
+                    popup.show();
+                }
+
+                $('#joinToRoomWithPassword').click(function () {
+                    var roomPass = $('#pass').val();
+
+                    $('.closePopupBtn').click(function () {
+                        closePopups();
+                    });
+                    //create room in db
+                    rooms.server.joinRoom(roomToJoinId, roomPass, name);
+                });
+            } else {
+                rooms.server.joinRoom(roomToJoinId, '', name);
+            }
+        });
+
+        //set the counter value
         setRoomCounter(roomsArray.length);
     }
 
-    
+    rooms.client.initRoom = function(roomParams) {
+        $('#view').load('app/templates/game.html', function () {
+            $('#leaveRoomBtn').attr('data-room-id', roomParams.Id);
+            //events
+            $('#leaveRoomBtn').click(function () {
+                alert($(this).attr('data-room-id'));
+                //rooms.server.leaveRoom($(this).attr('data-room-id'));
+            });
+        });
+    }
+
+    function closePopups() {
+        $('.popupBody').hide();
+        $('#pass').val('');
+        $('#roomName').val('');
+        $('#roomPass').val('');
+    }
+
 });

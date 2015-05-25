@@ -38,6 +38,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Client">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Client.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Client.dll</HintPath>
     </Reference>
@@ -85,6 +92,14 @@
     <Content Include="Client\app\templates\game.html" />
     <Content Include="Client\app\templates\insertName.html" />
     <Content Include="Client\app\templates\showRooms.html" />
+    <Content Include="Client\css\lobby.css" />
+    <Content Include="Client\css\main.css" />
+    <Content Include="Client\css\name.css" />
+    <Content Include="Client\css\popup.css" />
+    <Content Include="Client\css\template.css" />
+    <Content Include="Client\images\backgroundminimized.png" />
+    <Content Include="Client\images\closeBtn.png" />
+    <Content Include="Client\images\insertNameBg.png" />
     <Content Include="Client\images\logo.png" />
     <Content Include="packages.config" />
     <None Include="Web.Debug.config">
@@ -107,11 +122,14 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DrawlandiaContext.cs" />
     <Compile Include="Models\Game.cs" />
     <Compile Include="Models\Player.cs" />
-    <Compile Include="Models\State.cs" />
-    <Compile Include="Signalr\hubs\GameHub.cs" />
+    <Compile Include="Models\PlayerState.cs" />
     <Compile Include="Models\Room.cs" />
+    <Compile Include="Models\RoomState.cs" />
+    <Compile Include="Models\Word.cs" />
+    <Compile Include="Signalr\hubs\GameHub.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Signalr\hubs\RoomsHub.cs" />
     <Compile Include="Startup.cs" />

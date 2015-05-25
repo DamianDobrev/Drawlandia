@@ -1,204 +1,233 @@
-﻿* {
-    font-family: 'Lato', sans-serif;
-    margin: 0;
-    padding: 0;
-    list-style: none;
+﻿.game {
+    padding: 20px;
+}
+
+#players {
+    width: 192px;
+    float: left;
+}
+
+#chat {
+    width: 206px;
+    float: left;
+}
+
+#game {
+    width: 540px;
+    float: left;
+    margin: 0 10px;
+}
+
+.whiteContainer {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #cce2eb;
+    background: #ffffff;
+    margin: 0 0 10px 0;
+}
+
+#players ul {
+    overflow: hidden;
+}
+
+#players ul li{
+    width: 100%;
+    position: relative;
+    padding: 6px 0;
+}
+
+#players ul li span {
+    display: inline-block;
+    font-family: 'Bubblegum Sans', 'Underdog', cursive;
+}
+
+#players ul li span:first-child {
+    color: #5b8999;
+    margin: 0 7px 0 0;
+}
+
+#players ul li span:last-child {
+    color: #5dc3e7;
+    white-space: nowrap;
+    position: absolute;
+    left: 24px;
+}
+
+.isHisTurn span:first-child {
+    color: #d57d00 !important;
+}
+
+.isHisTurn span:last-child {
+    color: #ff9600 !important;
+}
+
+#players .fancyYellowBtn {
+    border-radius: 10px;
+    height: 34px;
+    padding: 0 5px;
+    line-height: 34px;
+    width: 100%;
+    margin: 10px 0 0 0;
+}
+
+#game .instruments {
+    width: 100%;
+    position: relative;
+}
+
+.instruments .colors li {
+    display: inline-block;
+    margin: 2px;
+    vertical-align: top;
+}
+
+.instruments .colors li button {
+    width: 25px;
+    height: 25px;
+    border-radius: 3px;
+    border: 1px solid #cce2eb;
+    outline: none;
     box-sizing: border-box;
 }
 
-body {
-    background-color: #5CD0F7;
+.selectedClr button {
+    border: 3px solid rgba(0,0,0,0.5) !important;
 }
 
-.main {
-    width: 1000px;
-    margin: 60px auto 0;
-    height: 640px;
-    background: #E8F5FA;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
-    border-radius: 40px;
-    position: relative;
-}
+.whiteClr button { background: #ffffff; }
+.blueClr button { background: #1795ff; }
+.greenClr button { background: #3cf018; }
+.redClr button { background: #e92020; }
+.yellowClr button { background: #fcff00; }
+.greyClr button { background: #888888; }
+.brownClr button { background: #8d5917; }
+.blackClr button { background: #000000; }
 
-.mainHeader {
-    width: 100%;
-}
-
-.mainHeader a {
-    color: #ffffff;
-}
-
-.logo {
-    width: 200px;
-    left: 50%;
-    top: 0;
-    margin: -40px 0 0 -100px;
-    height: 50px;
-    padding: 10px 0;
-    text-align: center;
+.instruments .size {
     position: absolute;
-}
-
-.logo a {
-    color: #8F5D96;
-    font-size: 35px;
-    text-decoration: none;
-}
-
-.menu {
-    width: 100%;
-    text-align: center;
-    margin: 10px 0;
-}
-
-.menu a {
-    text-decoration: none;
-    color: #8f5d96;
-    font-size: 13px;
-    padding: 0 10px;
-}
-
-.menu a:first-child{
-    border-right: 2px solid #8f5d96;
-}
-
-.main canvas {
-    background: white;
-    border: 1px solid #5486b8;
-    display: block;
-    padding: 0;
-    margin: 0;
-}
-
-.insertName {
-    width: 400px;
-    background: #8F5D96;
-    margin: 100px auto;
-    padding: 20px;
-    text-align: center;
-}
-
-.insertName label {
-    width: 100%;
-    display: block;
-    color: white;
-    font-size: 16px;
-    margin: 0 0 10px 0;
-    text-align: center;
-}
-
-.insertName input[type="text"] {
+    right: 0;
+    top: 0;
+    vertical-align: middle;
     height: 30px;
-    border: none;
-    width: 100%;
-    padding: 0 6px;
-    outline: none;
-    margin: 0 0 10px 0;
 }
 
-.insertName input[type="text"]:focus {
-    box-shadow: 0 0 10px #6b3a72;
-}
-
-.buttonWhite {
-    width: 80px;
+.instruments .size li {
+    display: inline-block;
+    margin: 0 3px;
+    vertical-align: middle;
     height: 30px;
     line-height: 30px;
-    padding: 0 10px;
+    padding: 0;
+}
+
+.instruments .size li button {
     border: none;
-    background: white;
-    color: #6b3a72;
-    margin: 0 auto;
+    background: #38add5;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
     outline: none;
 }
 
-.buttonWhite:hover {
-    opacity: 0.9;
-    cursor: pointer;
+.size .xs button { width: 6px;height: 6px;border-radius: 6px;}
+.size .s button { width: 12px;height: 12px;border-radius: 12px;}
+.size .m button { width: 18px;height: 18px;border-radius: 18px;}
+.size .l button { width: 24px;height: 24px;border-radius: 24px;}
+.size .xl button { width: 30px;height: 30px;border-radius: 30px;}
+.size .xxl button { width: 36px;height: 36px;border-radius: 36px;}
+
+.size .selectedSize button {
+    background: #000000 !important;
 }
 
-.errorMsg {
-    font-size: 12px;
-    color: #ffffff;
-    margin: 0 0 10px 0;
+#clearCanvas {
+    background: none;
+    border: none;
+    font-family: 'Bubblegum Sans', 'Underdog', cursive;
+    color: #7ad4f3;
+    font-size: 22px;
+    outline: none;
+    margin: 12px 0 0 0;
+    overflow: auto;
 }
 
-.showRooms .title {
+#game canvas {
+    width: 540px;
+    height: 330px;
+}
+
+#clearCanvas:hover {
     font-size: 24px;
 }
 
-.rooms li {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #8f5d96;
+#chat div.whiteContainer {
     position: relative;
-    margin: 0 0 5px 0;
+    overflow: auto;
+    width: 100%;
+    height: 330px;
+    margin: 0;
 }
 
-.rooms li button {
+#chatMessages {
+    position: absolute;
+    bottom: 0;
+    position: relative;
+}
+
+#chatMessages ul {
+    height: 100%;
+}
+
+#chatMessages ul li.playerName {
+    font-family: 'Bubblegum Sans', 'Underdog', cursive;
+    color: #5dc3e7;
+    margin: 4px 0 0 0;
+    font-size: 16px;
+}
+
+#chatMessages ul li:not(.playerName) {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 14px;
+    color: #777;
+}
+
+.inputMsg {
+    position: relative;
+}
+
+#chatInput {
+    padding: 0 28px 0 10px;
+    border-radius: 10px;
+    border: 1px solid #cce2eb;
+    background: #ffffff; /* Old browsers */
+    background: -moz-linear-gradient(top,  #ffffff 0%, #f4f9ff 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#f4f9ff)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #ffffff 0%,#f4f9ff 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #ffffff 0%,#f4f9ff 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #ffffff 0%,#f4f9ff 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  #ffffff 0%,#f4f9ff 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#f4f9ff',GradientType=0 ); /* IE6-9 */
+    height: 34px;
+    width: 100%;
+    outline: none;
+    margin: 4px 0 0 0;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+.sendMsgBtn {
+    width: 14px;
+    height: 14px;
+    border-radius: 14px;
+    background: #5dc3e7;
+    border: none;
+    outline: none;
     position: absolute;
     right: 10px;
-    top: 50%;
-    margin: -15px 0 0 0;
-    height: 30px;
-    padding: 0 20px;
-    background: #8f5d96;
-    color: white;
-    border: none;
+    top: 14px;
 }
 
-.rooms li button:hover {
-    opacity: 0.9;
+.sendMsgBtn:hover {
     cursor: pointer;
-}
-
-.newRoomBtn {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    margin: -15px 0 0 0;
-    height: 30px;
-    padding: 0 20px;
-    background: #8f5d96;
-    color: white;
-    border: none;
-}
-
-.newRoomBtn:hover {
     opacity: 0.9;
-    cursor: pointer;
 }
-
-.topSide {
-    position: relative;
-    width: 100%;
-    margin: 20px 0;
-}
-
-#newRoomPopup {
-    width: 100%;
-    padding: 20px 13px;
-    margin: 0 0 20px 0;
-    background: #8f5d96;
-    z-index: 100;
-    display: none;
-}
-
-#newRoomPopup label {
-    color: white;
-    margin: 0 0 0 10px;
-    font-size: 15px;
-}
-#newRoomPopup input {
-    width: 200px;
-    border: none;
-    height: 30px;
-    margin: 0 5px;
-    padding: 0 6px;
-    outline: none;
-}
-
-#newRoomPopup input:focus {
-    box-shadow: 0 0 10px #6b3a72;
-}
-

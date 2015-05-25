@@ -3,19 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace DrawlandiaApp.Models
+namespace DbInitializer.Models
 {
     public class Player
     {
-        public Player()
-        {
-        }
-
         public Player(string connectionId, string name)
         {
             this.ConnectionId = connectionId;
             this.Name = name;
-            this.State = PlayerState.InRoom;
         }
 
         public int Id { get; set; }
@@ -25,7 +20,5 @@ namespace DrawlandiaApp.Models
         public string Name { get; set; }
 
         public int RoomId { get; set; }
-
-        public PlayerState State { get; set; }
     }
 }

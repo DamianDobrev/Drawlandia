@@ -1,22 +1,27 @@
 ﻿<div>
     <div class="showRooms">
-        <!--<div class="popupBody" id="joinPopup">
-        <div class="popupContainer">
-            <label for="pass"></label>
-            <input id="pass" type="password" />
-        </div>
-    </div>-->
 
         <div class="topSide">
-            <div class="title">All rooms(<span id="roomCount"></span>)</div>
-            <button class="newRoomBtn" id="newRoomOpenBtn">New room</button>
+            <div class="title">All rooms(<span id="roomCount"></span>)
+            </div>
+            <button class="fancyYellowBtn applyTransition" id="newRoomOpenBtn">New room</button>
         </div>
-        <div id="newRoomPopup">
-            <label for="roomName">Name:</label>
-            <input id="roomName" type="text" />
-            <label for="roomPass">Password:</label>
-            <input id="roomPass" type="password" />
-            <button id="createRoomBtn" class="buttonWhite">Go</button>
+        <!--Popup for new room-->
+        <div class="popupBody" id="newRoomPopup">
+            <button class="closePopupBtn applyTransition">x</button>
+            <div class="popupTitle">New room</div>
+            <label for="roomName">Room name:</label>
+            <input id="roomName" type="text"/>
+            <label for="roomPass">Room password: (not required)</label>
+            <input id="roomPass" type="password"/>
+            <button id="createRoomBtn" class="fancyYellowBtn applyTransition button">New room</button>
+        </div>
+        <!--Popup for password-->
+        <div class="popupBody" id="joinPopup">
+            <button class="closePopupBtn applyTransition">x</button>
+            <label for="pass">Password:</label>
+            <input id="pass" type="password" />
+            <button id="joinToRoomWithPassword" class="fancyYellowBtn applyTransition button">Join</button>
         </div>
         <ul class="rooms" id="rooms">
         </ul>

@@ -1,0 +1,65 @@
+﻿.showRooms {
+    padding: 40px;    
+}
+
+.rooms {
+    height: 480px;
+    overflow-y: scroll;
+    width: 80%;
+    margin: 0 0 0 10%;
+    padding: 0 20px;
+}
+
+.rooms li {
+    padding: 10px 20px;
+    background: #5cc8ec; /* Old browsers */
+    background: -moz-linear-gradient(top,  #5cc8ec 0%, #4fbbdf 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#5cc8ec), color-stop(100%,#4fbbdf)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #5cc8ec 0%,#4fbbdf 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #5cc8ec 0%,#4fbbdf 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #5cc8ec 0%,#4fbbdf 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  #5cc8ec 0%,#4fbbdf 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5cc8ec', endColorstr='#4fbbdf',GradientType=0 ); /* IE6-9 */
+    position: relative;
+    margin: 0 0 5px 0;
+    border-radius: 40px;
+}
+
+.rooms li div {
+    color: #ffffff;
+    font-family: 'Bubblegum Sans', 'Underdog', cursive;
+    font-size: 18px;
+    font-weight: lighter;
+}
+
+.rooms li button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    margin: -15px 0 0 0;
+    height: 30px;
+    padding: 0 20px;
+    color: white;
+}
+
+#newRoomOpenBtn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    margin: -20px 0 0 0;
+}
+
+.topSide {
+    position: relative;
+    width: 100%;
+    margin: 20px 0;
+}
+
+
+footer {
+    height: 30px;
+    line-height: 30px;
+    margin: 0 0 0 50px;
+    font-family: 'Bubblegum Sans', 'Underdog', cursive;
+    color: #bde3f0;
+}

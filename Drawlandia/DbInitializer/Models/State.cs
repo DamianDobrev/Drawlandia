@@ -1,4 +1,4 @@
-﻿namespace DrawlandiaApp.Models
+﻿namespace DbInitializer.Models
 {
     public enum State
     {
