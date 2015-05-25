@@ -7,6 +7,7 @@ namespace DrawlandiaApp.Models
     {
         public Room()
         {
+            this.Players = new List<Player>();
         }
 
         public Room(string name, string password)
@@ -14,6 +15,7 @@ namespace DrawlandiaApp.Models
             this.Name = name;
             this.Password = password;
             this.State = RoomState.NotStarted;
+            this.Players = new List<Player>();
         }
 
         public int Id { get; set; }
@@ -22,7 +24,7 @@ namespace DrawlandiaApp.Models
 
         public string Password { get; set; }
 
-        public ICollection<Player> Players { get; set; }
+        public virtual ICollection<Player> Players { get; set; }
 
         public RoomState State { get; set; }
     }

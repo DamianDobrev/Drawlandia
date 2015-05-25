@@ -9,6 +9,7 @@ namespace DrawlandiaApp.Models
     {
         public Player()
         {
+            this.State = PlayerState.InRoom;
         }
 
         public Player(string connectionId, string name)

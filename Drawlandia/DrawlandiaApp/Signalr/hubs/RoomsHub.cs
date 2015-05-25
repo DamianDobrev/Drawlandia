@@ -128,6 +128,13 @@ namespace DrawlandiaApp.Signalr.hubs
                 return;
             }
 
+            //Check if people in room reached 6
+            if (roomToJoin.Players.Count >= 6)
+            {
+                Clients.Caller.errorWithMsg("Room is full.");
+                return;
+            }
+
             //Authorization
             if (!String.IsNullOrEmpty(roomToJoin.Password) && roomToJoin.Password != password)
             {
@@ -136,7 +143,7 @@ namespace DrawlandiaApp.Signalr.hubs
             }
 
             var playerToBeJoined = new Player(Context.ConnectionId, playerName);
-            roomToJoin.Players = new List<Player>();
+
             roomToJoin.Players.Add(playerToBeJoined);
             Groups.Add(Context.ConnectionId, roomToJoin.Name);
             db.SaveChanges();
@@ -146,12 +153,22 @@ namespace DrawlandiaApp.Signalr.hubs
 
         public void LeaveRoom(int roomId)
         {
-            var roomToLeave = db.Rooms.FirstOrDefault(room => room.Id == roomId);
+            var rooms = db.Rooms;
+            var roomToLeave = rooms.FirstOrDefault(room => room.Id == roomId);
 
             //Check if room exists
             if (roomToLeave == null)
             {
                 Clients.Caller.errorWithMsg("No such room.");
+                return;
+            }
+
+            var playerLeaving = roomToLeave.Players.FirstOrDefault(pl => pl.ConnectionId == Context.ConnectionId);
+
+            //Check if player exists in the room
+            if (playerLeaving == null)
+            {
+                Clients.Caller.errorWithMsg("You are not in that room.");
                 return;
             }
 
@@ -162,12 +179,19 @@ namespace DrawlandiaApp.Signalr.hubs
                 return;
             }
 
-            //Leave
-            var playerLeaving = roomToLeave.Players.FirstOrDefault(pl => pl.ConnectionId == Context.ConnectionId);
+            //Leave and remove room if no one left
             roomToLeave.Players.Remove(playerLeaving);
+            if (!roomToLeave.Players.Any())
+            {
+                rooms.Remove(roomToLeave);
+            }
+
+            db.Players.Remove(playerLeaving);
+            db.SaveChanges();
+
             Groups.Remove(Context.ConnectionId, roomToLeave.Name);
 
-            GetAllRooms();
+            Clients.Caller.redirectToLobby();
         }
 
         //public void StartGame(string roomName)
@@ -179,5 +203,19 @@ namespace DrawlandiaApp.Signalr.hubs
         //    //    roomToStart.State = State.Started;
         //    //}
         //}
+        public override Task OnDisconnected(bool stopCalled)
+        {
+            var players = db.Players;
+            var dcPlayer = players.FirstOrDefault(p => p.ConnectionId == Context.ConnectionId);
+
+            //Check if dc player is not in db
+            if (dcPlayer == null)
+            {
+                return Clients.Caller.errorWithMsg("Something went terribly wrong");
+            }
+
+            LeaveRoom(dcPlayer.RoomId);
+            return Clients.All.errorWithMsg("someone disconnected from your room");
+        }
     }
 }

@@ -162,6 +162,7 @@
 
     rooms.client.errorWithMsg = function (msg) {
         alert(msg);
+        console.log(msg);
     }
 
     rooms.client.initializeRooms = function (roomsJson) {
@@ -212,13 +213,22 @@
 
     rooms.client.initRoom = function(roomParams) {
         $('#view').load('app/templates/game.html', function () {
-            $('#leaveRoomBtn').attr('data-room-id', roomParams.Id);
+            var room = JSON.parse(roomParams);
+
+            room.Players.forEach(function(player) {
+                $('#players ul').append($('<li><span>43</span><span>'+ player.Name +'</span></li>'));
+            });
+
             //events
-            $('#leaveRoomBtn').click(function () {
-                alert($(this).attr('data-room-id'));
-                //rooms.server.leaveRoom($(this).attr('data-room-id'));
+
+            $('#leaveRoomBtn').click(function() {
+                rooms.server.leaveRoom(room.Id);
             });
         });
+    }
+
+    rooms.client.redirectToLobby = function() {
+        showRooms();
     }
 
     function closePopups() {
