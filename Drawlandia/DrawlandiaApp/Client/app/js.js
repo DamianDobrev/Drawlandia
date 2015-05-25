@@ -92,6 +92,7 @@
             addClick(xRemote, yRemote, dragRemote, colorCurRemote);
             redraw();
         };
+
         game.client.clearCanvas = function () {
             context.clearRect(0, 0, context.canvas.width, context.canvas.height);
             clickX = new Array();
@@ -105,9 +106,6 @@
     $.connection.hub.start().done(function () {
         //Enter name
         $('#view').load('app/templates/insertName.html', function () {
-
-            //events
-
             $('#insertNameBtn').click(function () {
                 var nameInput = $('#name');
                 if (nameInput.val()) {
@@ -154,6 +152,39 @@
 
     function setRoomCounter(count) {
         $('#roomCount').text(count);
+    }
+
+    function closePopups() {
+        $('.popupBody').hide();
+        $('#pass').val('');
+        $('#roomName').val('');
+        $('#roomPass').val('');
+    }
+
+    function updatePlayerData(players) {
+        $('#players ul').html('');
+        players.forEach(function (player) {
+            var liToAppend = $('<li><span>' + player.Score + '</span><span>' + player.Name + '</span></li>');
+            if (player.IsHisTurn) {
+                liToAppend.attr('class', 'isHisTurn');
+            }
+            $('#players ul').append(liToAppend);
+        });
+    }
+
+    var previousAuthor = '';
+
+    rooms.client.addMessage = function(author, message) {
+        if (previousAuthor != author) {
+            $('#chat div ul').append($('<li class="playerName">').text(author));
+        }
+        previousAuthor = author;
+        $('#chat div ul').append($('<li>').text(message));
+        $('#chat div.whiteContainer').scrollTop(1000000);
+    }
+
+    rooms.client.updatePlayers = function(players) {
+        updatePlayerData(players);
     }
 
     rooms.client.alertNew = function () {
@@ -213,16 +244,39 @@
 
     rooms.client.initRoom = function(roomParams) {
         $('#view').load('app/templates/game.html', function () {
+
             var room = JSON.parse(roomParams);
 
-            room.Players.forEach(function(player) {
-                $('#players ul').append($('<li><span>43</span><span>'+ player.Name +'</span></li>'));
-            });
+            updatePlayerData(room.Players);
 
             //events
 
             $('#leaveRoomBtn').click(function() {
                 rooms.server.leaveRoom(room.Id);
+            });
+
+            function sendMsg() {
+                var message = $('#chatInput').val();
+                if (message != '' && message != null) {
+                    rooms.server.sendMessage(message);
+                    $('#chatInput').val('');
+                    $('#chatInput').focus();
+                }
+            }
+
+            $('#sendMsgBtn').click(function () {
+                sendMsg();
+            });
+
+            $('#chatInput').keypress(function (e) {
+                var code = e.keyCode || e.which;
+                if (code == 13) {
+                    sendMsg();
+                }
+            });
+
+            $('#newGameBtn').click(function() {
+
             });
         });
     }
@@ -231,11 +285,7 @@
         showRooms();
     }
 
-    function closePopups() {
-        $('.popupBody').hide();
-        $('#pass').val('');
-        $('#roomName').val('');
-        $('#roomPass').val('');
+    rooms.client.playSound = function(type) {
+        alert(type);
     }
-
 });

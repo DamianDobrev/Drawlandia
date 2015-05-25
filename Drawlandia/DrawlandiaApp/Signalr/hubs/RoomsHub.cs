@@ -148,6 +148,7 @@ namespace DrawlandiaApp.Signalr.hubs
             Groups.Add(Context.ConnectionId, roomToJoin.Name);
             db.SaveChanges();
 
+            Clients.Group(roomToJoin.Name).updatePlayers(roomToJoin.Players);
             GoToRoom(roomToJoin.Id);
         }
 
@@ -185,13 +186,45 @@ namespace DrawlandiaApp.Signalr.hubs
             {
                 rooms.Remove(roomToLeave);
             }
-
             db.Players.Remove(playerLeaving);
             db.SaveChanges();
 
             Groups.Remove(Context.ConnectionId, roomToLeave.Name);
 
+            Clients.Group(roomToLeave.Name).updatePlayers(roomToLeave.Players);
+
+            Clients.Group(roomToLeave.Name).playSound("Disconnect");
+
             Clients.Caller.redirectToLobby();
+
+            UpdateRoomsToAll();
+            
+        }
+
+        public void SendMessage(string message)
+        {
+            var player = db.Players.FirstOrDefault(p => p.ConnectionId == Context.ConnectionId);
+
+            if (player == null)
+            {
+                Clients.Caller.errorWithMsg("Player doesn't exists, please refresh the page.");
+                return;
+            }
+
+            var room = db.Rooms.FirstOrDefault(r => r.Id == player.RoomId);
+
+            if (String.IsNullOrEmpty(message))
+            {
+                return;
+            }
+
+            if (room == null)
+            {
+                Clients.Caller.errorWithMsg("Something went wrong...");
+                return;
+            }
+
+            Clients.Group(room.Name).addMessage(player.Name, message);
         }
 
         //public void StartGame(string roomName)
@@ -206,6 +239,7 @@ namespace DrawlandiaApp.Signalr.hubs
         public override Task OnDisconnected(bool stopCalled)
         {
             var players = db.Players;
+            var rooms = db.Rooms;
             var dcPlayer = players.FirstOrDefault(p => p.ConnectionId == Context.ConnectionId);
 
             //Check if dc player is not in db
@@ -215,7 +249,8 @@ namespace DrawlandiaApp.Signalr.hubs
             }
 
             LeaveRoom(dcPlayer.RoomId);
-            return Clients.All.errorWithMsg("someone disconnected from your room");
+
+            return Clients.Caller.errorWithMsg("Error");
         }
     }
 }

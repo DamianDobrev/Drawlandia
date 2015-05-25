@@ -123,6 +123,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DrawlandiaContext.cs" />
+    <Compile Include="Migrations\201505251814367_InitialCreate.cs" />
+    <Compile Include="Migrations\201505251814367_InitialCreate.Designer.cs">
+      <DependentUpon>201505251814367_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Game.cs" />
     <Compile Include="Models\Player.cs" />
     <Compile Include="Models\PlayerState.cs" />
@@ -134,7 +139,11 @@
     <Compile Include="Signalr\hubs\RoomsHub.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201505251814367_InitialCreate.resx">
+      <DependentUpon>201505251814367_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

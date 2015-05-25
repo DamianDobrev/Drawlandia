@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using DrawlandiaApp.Models;
+using DrawlandiaApp.Migrations;
 
 namespace DrawlandiaApp
 {
@@ -12,6 +13,7 @@ namespace DrawlandiaApp
         public DrawlandiaContext()
             : base("Drawlandia")
         {
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DrawlandiaContext, Configuration>());
         }
 
         public DbSet<Room> Rooms { get; set; }

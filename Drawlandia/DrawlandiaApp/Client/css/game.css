@@ -170,7 +170,6 @@
 }
 
 #chatMessages {
-    position: absolute;
     bottom: 0;
     position: relative;
 }

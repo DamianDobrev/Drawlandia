@@ -10,6 +10,8 @@ namespace DrawlandiaApp.Models
         public Player()
         {
             this.State = PlayerState.InRoom;
+            this.Score = 0;
+            this.IsHisTurn = false;
         }
 
         public Player(string connectionId, string name)
@@ -17,6 +19,8 @@ namespace DrawlandiaApp.Models
             this.ConnectionId = connectionId;
             this.Name = name;
             this.State = PlayerState.InRoom;
+            this.Score = 0;
+            this.IsHisTurn = false;
         }
 
         public int Id { get; set; }
@@ -28,5 +32,9 @@ namespace DrawlandiaApp.Models
         public int RoomId { get; set; }
 
         public PlayerState State { get; set; }
+
+        public int Score { get; set; }
+
+        public bool IsHisTurn { get; set; }
     }
 }
