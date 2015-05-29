@@ -167,6 +167,7 @@
     width: 100%;
     height: 330px;
     margin: 0;
+    overflow-x: hidden;
 }
 
 #chatMessages {
@@ -176,6 +177,10 @@
 
 #chatMessages ul {
     height: 100%;
+}
+
+#chatMessages ul li {
+    white-space: normal;
 }
 
 #chatMessages ul li.playerName {
@@ -228,5 +233,11 @@
 
 .sendMsgBtn:hover {
     cursor: pointer;
-    opacity: 0.9;
+    opacity: 0.5;
+}
+
+#newGameBtn {
+    position: absolute;
+    right: 0;
+    top: 0;
 }

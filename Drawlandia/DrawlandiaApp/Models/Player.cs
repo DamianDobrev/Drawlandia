@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DrawlandiaApp.Models
 {
@@ -9,29 +6,28 @@ namespace DrawlandiaApp.Models
     {
         public Player()
         {
-            this.State = PlayerState.InRoom;
             this.Score = 0;
             this.IsHisTurn = false;
         }
 
-        public Player(string connectionId, string name)
+        public Player(string connectionIdentifier, string name)
         {
-            this.ConnectionId = connectionId;
+            this.ConnectionIdentifier = connectionIdentifier;
             this.Name = name;
-            this.State = PlayerState.InRoom;
             this.Score = 0;
             this.IsHisTurn = false;
         }
 
         public int Id { get; set; }
 
-        public string ConnectionId { get; set; }
+        public string ConnectionIdentifier { get; set; }
 
         public string Name { get; set; }
 
-        public int RoomId { get; set; }
+        public int CurrentGameId { get; set; }
 
-        public PlayerState State { get; set; }
+        [ForeignKey("CurrentGameId")]
+        public virtual Game CurrentGame { get; set; }
 
         public int Score { get; set; }
 

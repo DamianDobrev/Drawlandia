@@ -49,6 +49,13 @@
     margin: -20px 0 0 0;
 }
 
+#refreshGamesBtn {
+    position: absolute;
+    right: 120px;
+    top: 50%;
+    margin: -20px 0 0 0;
+}
+
 .topSide {
     position: relative;
     width: 100%;
