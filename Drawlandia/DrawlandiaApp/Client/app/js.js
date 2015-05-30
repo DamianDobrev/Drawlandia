@@ -1,8 +1,30 @@
 ﻿$(function () {
     var games = $.connection.gameHub;
     var name;
+    var gameName;
+    var isDrawer = false;
+
+    var context;
+    var clickX = new Array();
+    var clickY = new Array();
+    var clickDrag = new Array();
+    var colors = new Array();
+    var sizes = new Array();
+
 
     var previousAuthor = '';
+
+    window.setContext = function(contextValue) {
+        context = contextValue;
+    }
+
+    window.setGameName = function(gName) {
+        gameName = gName;
+    }
+
+    window.setDrawer = function(drawer) {
+        isDrawer = drawer;
+    }
 
     $.connection.hub.start().done(function () {
         //Enter name
@@ -132,110 +154,13 @@
 
             var game = JSON.parse(gameParams);
 
+            setContext(document.getElementById('gameCanvas').getContext("2d"));
+
             updatePlayerData(game.Players);
 
+            setGameName(game.Name);
+
             $('#gameName').text(game.Name);
-
-
-            $(function () {
-                var context = document.getElementById('gameCanvas').getContext("2d");
-
-                var paint = false;
-                var mousePosX;
-                var mousePosY;
-                var color = "#000000";
-
-                var clickX = new Array();
-                var clickY = new Array();
-                var clickDrag = new Array();
-                var colors = new Array();
-
-                function addClick(x, y, dragging, colorCur) {
-                    clickX.push(x);
-                    clickY.push(y);
-                    clickDrag.push(dragging);
-                    colors.push(colorCur);
-                }
-
-                function redraw() {
-                    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-
-                    context.lineJoin = "round";
-                    context.lineWidth = 5;
-
-                    for (var i = 0; i < clickX.length; i++) {
-                        context.strokeStyle = colors[i];
-                        context.beginPath();
-                        if (clickDrag[i] && i) {
-                            context.moveTo(clickX[i - 1], clickY[i - 1]);
-                        } else {
-                            context.moveTo(clickX[i] - 1, clickY[i]);
-                        }
-                        context.lineTo(clickX[i], clickY[i]);
-                        context.closePath();
-                        context.stroke();
-                    }
-                }
-
-                //mouse interaction functions
-
-                $('#gameCanvas').mousedown(function(e) {
-                    var canvasPos = $('#gameCanvas').offset();
-                    mousePosX = e.pageX - this.offsetLeft - Math.round(canvasPos.left);
-                    mousePosY = e.pageY - this.offsetTop - Math.round(canvasPos.top);
-
-                    paint = true;
-                    games.server.draw(mousePosX, mousePosY, false, color);
-                });
-                $('#gameCanvas').mousemove(function(e) {
-                    var canvasPos = $('#gameCanvas').offset();
-                    mousePosX = e.pageX - this.offsetLeft - Math.round(canvasPos.left);
-                    mousePosY = e.pageY - this.offsetTop - Math.round(canvasPos.top);
-
-                    if (paint) {
-                        games.server.draw(mousePosX, mousePosY, true, color);
-                    }
-                });
-                $('#gameCanvas').mouseup(function(e) {
-                    paint = false;
-                });
-                $('#gameCanvas').mouseleave(function(e) {
-                    paint = false;
-                });
-
-                //instruments
-
-                $('#brushColorBlack').click(function(e) {
-                    color = '#000000';
-                });
-                $('#brushColorRed').click(function(e) {
-                    color = '#ff0000';
-                });
-                $('#brushEraser').click(function(e) {
-                    color = '#ffffff';
-                });
-                $('#clearCanvas').click(function(e) {
-                    games.server.clear();
-                });
-
-                //functions called by server
-
-                games.client.drawRemote = function (xRemote, yRemote, dragRemote, colorCurRemote) {
-                    addClick(xRemote, yRemote, dragRemote, colorCurRemote);
-                    redraw();
-                };
-
-                games.client.clearCanvas = function () {
-                    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-                    clickX = new Array();
-                    clickY = new Array();
-                    clickDrag = new Array();
-                    colors = new Array();
-                    alert("CLEAR CANVAS CALLED FROM SERVER");
-                }
-            });
-
-
 
             //events
 
@@ -268,6 +193,34 @@
                 games.server.startGame();
             });
         });
+    }
+
+    window.addClick = function (x, y, dragging, colorCur, sizeCur) {
+        clickX.push(x);
+        clickY.push(y);
+        clickDrag.push(dragging);
+        colors.push(colorCur);
+        sizes.push(sizeCur);
+    }
+
+    window.redraw = function() {
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+
+        context.lineJoin = "round";
+
+        for (var i = 0; i < clickX.length; i++) {
+            context.lineWidth = sizes[i];
+            context.strokeStyle = colors[i];
+            context.beginPath();
+            if (clickDrag[i] && i) {
+                context.moveTo(clickX[i - 1], clickY[i - 1]);
+            } else {
+                context.moveTo(clickX[i] - 1, clickY[i]);
+            }
+            context.lineTo(clickX[i], clickY[i]);
+            context.closePath();
+            context.stroke();
+        }
     }
 
     games.client.updatePlayers = function (players) {
@@ -304,11 +257,63 @@
     games.client.becomeDrawer = function (word) {
         $('#currentWord').show().html('<span class="swd">Draw:</span> ' + word);
         $('#currentPattern').text('').hide();
+
+        setDrawer(true);
+        
+        var paint = false;
+        var mousePosX;
+        var mousePosY;
+        var color = "#00ff00";
+        var size = "5";
+
+        $('#gameCanvas').mousedown(function (e) {
+            if (!isDrawer) {
+                return;
+            }
+            var canvasPos = $('#gameCanvas').offset();
+            mousePosX = e.pageX - Math.round(canvasPos.left);
+            mousePosY = e.pageY - Math.round(canvasPos.top);
+
+            paint = true;
+            paintCanvas(mousePosX, mousePosY, false, color, size);
+            games.server.draw(gameName, mousePosX, mousePosY, false, color, size);
+        });
+
+        $('#gameCanvas').mousemove(function (e) {
+            if (!isDrawer) {
+                return;
+            }
+            var canvasPos = $('#gameCanvas').offset();
+            mousePosX = e.pageX - Math.round(canvasPos.left);
+            mousePosY = e.pageY - Math.round(canvasPos.top);
+
+            if (paint) {
+                paintCanvas(mousePosX, mousePosY, true, color, size);
+                games.server.draw(gameName, mousePosX, mousePosY, true, color, size);
+            }
+        });
+
+        $('#gameCanvas').mouseup(function (e) {
+            if (!isDrawer) {
+                return;
+            }
+            paint = false;
+        });
+
+        $('#gameCanvas').mouseleave(function (e) {
+            if (!isDrawer) {
+                return;
+            }
+            paint = false;
+        });
+
+
     }
 
     games.client.becomeGuesser = function (pattern) {
         $('#currentPattern').show().html('<span class="swd">Guess:</span> ' + pattern);
         $('#currentWord').text('').hide();
+        setDrawer(false);
     }
 
     games.client.becomeOrdinaryPlayer = function() {
@@ -329,11 +334,21 @@
         $('#timer').show();
     }
 
-    games.client.unlockCanvas = function() {
-        
-    }
+    games.client.drawRemote = function (xRemote, yRemote, dragRemote, colorCurRemote, sizeCur) {
+        paintCanvas(xRemote, yRemote, dragRemote, colorCurRemote, sizeCur);
+    };
 
-    games.client.lockCanvas = function() {
-        
+    window.paintCanvas = function (xRemote, yRemote, dragRemote, colorCurRemote, sizeCur) {
+        addClick(xRemote, yRemote, dragRemote, colorCurRemote, sizeCur);
+        redraw();
+    };
+
+    games.client.clearCanvas = function () {
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+        clickX = new Array();
+        clickY = new Array();
+        clickDrag = new Array();
+        colors = new Array();
+        sizes = new Array();
     }
 });

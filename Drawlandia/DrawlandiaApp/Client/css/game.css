@@ -155,6 +155,7 @@
 #game canvas {
     width: 540px;
     height: 330px;
+    padding: 0 !important;
 }
 
 #clearCanvas:hover {

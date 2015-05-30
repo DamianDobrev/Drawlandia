@@ -259,6 +259,8 @@ namespace DrawlandiaApp.Signalr.hubs
             }
             else
             {
+                dcPlayer.PlayerState = PlayerState.Disconnected;
+
                 var game = dcPlayer.CurrentGame;
                 var gameId = game.Id;
                 if (game.Players.All(p => p.PlayerState == PlayerState.Disconnected))
@@ -326,7 +328,7 @@ namespace DrawlandiaApp.Signalr.hubs
             {
                 foreach (var player in players)
                 {
-                    player.PlayerState = PlayerState.InStartedGame;
+                    player.PlayerState = PlayerState.InGame;
                 }
                 game.TurnsMap = GenerateTurnsMap(players);
             }
@@ -404,7 +406,7 @@ namespace DrawlandiaApp.Signalr.hubs
             var outputMessage = GenerateEndGameMessage(game.Players.ToList());
             foreach (var player in game.Players.ToList())
             {
-                if (player.PlayerState == PlayerState.InStartedGame)
+                if (player.PlayerState == PlayerState.InGame)
                 {
                     player.PlayerState = PlayerState.InRoom;
                 }
@@ -520,14 +522,14 @@ namespace DrawlandiaApp.Signalr.hubs
 
         //Drawing functions
 
-        public void Draw(int clickX, int clickY, bool clickDrag, string color)
+        public void Draw(string gameName, int clickX, int clickY, bool clickDrag, string color, int size)
         {
-            Clients.All.drawRemote(clickX, clickY, clickDrag, color);
+            Clients.OthersInGroup(gameName).drawRemote(clickX, clickY, clickDrag, color, size);
         }
 
-        public void Clear()
+        public void Clear(string gameName)
         {
-            Clients.All.clearCanvas();
+            Clients.Group(gameName).clearCanvas();
         }
     }
 }
