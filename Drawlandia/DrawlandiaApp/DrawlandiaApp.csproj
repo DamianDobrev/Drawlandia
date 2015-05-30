@@ -123,6 +123,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DrawlandiaContext.cs" />
+    <Compile Include="Models\BrushSize.cs" />
+    <Compile Include="Models\BrushColor.cs" />
     <Compile Include="Models\Player.cs" />
     <Compile Include="Models\PlayerState.cs" />
     <Compile Include="Models\Game.cs" />

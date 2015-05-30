@@ -35,6 +35,8 @@ namespace DrawlandiaApp.Signalr.hubs
         {
             var games = db.Games;
             var ourGame = games.FirstOrDefault(g => g.Id == id);
+            var brushSizes = db.BrushSizes;
+            var brushColors = db.BrushColors;
 
             //Check if game exists
             if (ourGame == null)
@@ -55,8 +57,11 @@ namespace DrawlandiaApp.Signalr.hubs
                     HasPassword = !String.IsNullOrEmpty(ourGame.Password)
                 };
 
-            var outputJson = jsonSerialiser.Serialize(outputGame);
-            Clients.Caller.initGame(outputJson);
+            var outputJsonGame = jsonSerialiser.Serialize(outputGame);
+            var outputJsonBrushColors = jsonSerialiser.Serialize(brushColors);
+            var outputJsonBrushSizes = jsonSerialiser.Serialize(brushSizes);
+
+            Clients.Caller.initGame(outputJsonGame, outputJsonBrushColors, outputJsonBrushSizes);
         }
 
         public void CreateGame(string name, string password, string creatorName)
@@ -87,8 +92,6 @@ namespace DrawlandiaApp.Signalr.hubs
 
             var gameOutput = games.FirstOrDefault(r => r.Name == gameToCreate.Name);
             GoToGame(gameOutput.Id);
-
-            UpdateLobby();
         }
 
         public void JoinGame(int gameId, string password, string playerName)
@@ -168,12 +171,15 @@ namespace DrawlandiaApp.Signalr.hubs
             {
                 games.Remove(gameToLeave);
             }
+            else
+            {
+                Clients.Group(gameToLeave.Name).updatePlayers(GetPlayersOutput(gameToLeave.Players));
+            }
+
             db.Players.Remove(playerLeaving);
             db.SaveChanges();
 
             Groups.Remove(Context.ConnectionId, gameToLeave.Name);
-
-            Clients.Group(gameToLeave.Name).updatePlayers(GetPlayersOutput(gameToLeave.Players));
 
             Clients.Group(gameToLeave.Name).playSound("Disconnect");
 
@@ -373,7 +379,9 @@ namespace DrawlandiaApp.Signalr.hubs
 
             //Send the word and pattern to clients
             Clients.Client(currentDrawer.ConnectionId).becomeDrawer(game.CurrentWord);
-            Clients.AllExcept(currentDrawer.ConnectionId).becomeGuesser(game.CurrentPattern);
+            Clients.OthersInGroup(currentDrawer.CurrentGame.Name).becomeGuesser(game.CurrentPattern);
+
+            Clients.Group(currentDrawer.CurrentGame.Name).clearCanvas();
         }
 
         private string RemoveElementFromMap(string map)
@@ -398,7 +406,7 @@ namespace DrawlandiaApp.Signalr.hubs
             }
 
             var mapArr = mapOutputList.ToArray();
-            return String.Join(",", mapArr);
+            return String.Join(",", mapArr) + ",";
         }
 
         private void EndGame(Game game)
@@ -424,7 +432,7 @@ namespace DrawlandiaApp.Signalr.hubs
 
             db.SaveChanges();
 
-            Clients.Group(game.Name).gameOver(outputMessage);
+            Clients.Group(game.Name).gameOver(outputMessage, game.Id);
         }
 
         private IEnumerable<object> GetPlayersOutput(ICollection<Player> players)
@@ -477,10 +485,7 @@ namespace DrawlandiaApp.Signalr.hubs
             StringBuilder output = new StringBuilder();
             foreach (var character in randomWord.ToCharArray())
             {
-                if (character != ' ')
-                {
-                    output.Append('_');
-                }
+                output.Append(character != ' ' ? '_' : ' ');
             }
             return output.ToString();
         }
@@ -527,9 +532,14 @@ namespace DrawlandiaApp.Signalr.hubs
             Clients.OthersInGroup(gameName).drawRemote(clickX, clickY, clickDrag, color, size);
         }
 
-        public void Clear(string gameName)
+        public void Clear()
         {
-            Clients.Group(gameName).clearCanvas();
+            var player = db.Players.FirstOrDefault(p => p.ConnectionId == Context.ConnectionId);
+            var game = player.CurrentGame;
+            if (GetNextIdFromMap(game.TurnsMap) == player.Id)
+            {
+                Clients.Group(game.Name).clearCanvas();
+            }
         }
     }
 }

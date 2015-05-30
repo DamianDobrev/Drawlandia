@@ -1,5 +1,6 @@
 ﻿$(function () {
     var games = $.connection.gameHub;
+
     var name;
     var gameName;
     var isDrawer = false;
@@ -11,18 +12,39 @@
     var colors = new Array();
     var sizes = new Array();
 
+    var paint = false;
+    var mousePosX;
+    var mousePosY;
+    var brColor = "#000000";
+    var brSize = 4;
 
     var previousAuthor = '';
 
-    window.setContext = function(contextValue) {
+    window.setBrColor = function (hexColor)
+    {
+        brColor = '#' + hexColor;
+        $('#brushColors li button').each(function() {
+            $(this).removeClass('selectedClr');
+        });
+    }
+
+    window.setBrSize = function(size) {
+        brSize = size;
+        $('#brushSize li button').each(function () {
+            $(this).removeClass('selectedSize');
+        });
+    }
+
+    window.setContext = function (contextValue) {
         context = contextValue;
     }
 
-    window.setGameName = function(gName) {
+    window.setGameName = function (gName) {
         gameName = gName;
+        $('#gameName').text(gName);
     }
 
-    window.setDrawer = function(drawer) {
+    window.setDrawer = function (drawer) {
         isDrawer = drawer;
     }
 
@@ -33,7 +55,7 @@
                 var nameInput = $('#name');
                 if (nameInput.val()) {
                     name = nameInput.val();
-                    showRooms();
+                    initLobby();
                 } else {
                     $('.errorMsg').text("Name should be at least 1 character long");
                 }
@@ -41,7 +63,7 @@
         });
     });
 
-    function showRooms() {
+    function initLobby() {
         $('#view').load('app/templates/showRooms.html', function () {
 
             games.server.getAllGames();
@@ -149,22 +171,28 @@
         setRoomCounter(roomsArray.length);
     }
 
-    games.client.initGame = function(gameParams) {
+    games.client.initGame = function (gameParams, brushColors, brushSizes) {
         $('#view').load('app/templates/game.html', function () {
 
             var game = JSON.parse(gameParams);
+
+            setGameName(game.Name);
 
             setContext(document.getElementById('gameCanvas').getContext("2d"));
 
             updatePlayerData(game.Players);
 
-            setGameName(game.Name);
+            initBrushColors(brushColors);
 
-            $('#gameName').text(game.Name);
+            initBrushSizes(brushSizes);
 
+            $('#clearCanvas').click(function (e) {
+                games.server.clear();
+                alert("DSADSA");
+            });
             //events
 
-            $('#leaveRoomBtn').click(function() {
+            $('#leaveRoomBtn').click(function () {
                 games.server.leaveGame(game.Id);
             });
 
@@ -189,9 +217,53 @@
                 }
             });
 
-            $('#newGameBtn').click(function() {
+            $('#newGameBtn').click(function () {
                 games.server.startGame();
             });
+        });
+    }
+
+    window.initBrushColors = function (brushColors) {
+        var brushColorsObj = JSON.parse(brushColors);
+        brushColorsObj.forEach(function (colorObj) {
+            var color = colorObj.ColorHex;
+            $('#brushColors')
+                .append($('<li>')
+                    .append($('<button class="colorButton">')
+                        .css('background-color', '#' + color)
+                        .attr('data-color', color)));
+
+        });
+
+        $('#brushColors li:last button').addClass('selectedClr');
+
+        $('.colorButton').click(function (e) {
+            var color = $(this).attr('data-color');
+            setBrColor(color);
+            $(this).addClass('selectedClr');
+        });
+    }
+
+    window.initBrushSizes = function (brushSizes) {
+        var brushSizesObj = JSON.parse(brushSizes);
+        brushSizesObj.forEach(function (sizeObj) {
+            var size = sizeObj.Size;
+            $('#brushSize')
+                .append($('<li>')
+                    .append($('<button class="sizeButton">')
+                        .css('width', size)
+                        .css('height', size)
+                        .css('border-radius', size)
+                        .attr('data-size', size)));
+
+        });
+
+        $('#brushSize li:nth-child(2) button').addClass('selectedSize');
+
+        $('#brushSize li').click(function (e) {
+            var size = $(this).find('button').attr('data-size');
+            setBrSize(size);
+            $(this).find('button').addClass('selectedSize');
         });
     }
 
@@ -203,7 +275,7 @@
         sizes.push(sizeCur);
     }
 
-    window.redraw = function() {
+    window.redraw = function () {
         context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
         context.lineJoin = "round";
@@ -227,11 +299,11 @@
         updatePlayerData(players);
     }
 
-    games.client.redirectToLobby = function() {
-        showRooms();
+    games.client.redirectToLobby = function () {
+        initLobby();
     }
 
-    games.client.playSound = function(type) {
+    games.client.playSound = function (type) {
         alert(type);
     }
 
@@ -249,7 +321,7 @@
         console.log(msg);
     }
 
-    games.client.onGuessedWord = function(msg, players) {
+    games.client.onGuessedWord = function (msg, players) {
         alert('onGuessedWord(): ' + msg);
         updatePlayerData(players);
     }
@@ -259,12 +331,8 @@
         $('#currentPattern').text('').hide();
 
         setDrawer(true);
-        
-        var paint = false;
-        var mousePosX;
-        var mousePosY;
-        var color = "#00ff00";
-        var size = "5";
+
+        // mouse-canvas interaction
 
         $('#gameCanvas').mousedown(function (e) {
             if (!isDrawer) {
@@ -275,8 +343,8 @@
             mousePosY = e.pageY - Math.round(canvasPos.top);
 
             paint = true;
-            paintCanvas(mousePosX, mousePosY, false, color, size);
-            games.server.draw(gameName, mousePosX, mousePosY, false, color, size);
+            paintCanvas(mousePosX, mousePosY, false, brColor, brSize);
+            games.server.draw(gameName, mousePosX, mousePosY, false, brColor, brSize);
         });
 
         $('#gameCanvas').mousemove(function (e) {
@@ -288,8 +356,8 @@
             mousePosY = e.pageY - Math.round(canvasPos.top);
 
             if (paint) {
-                paintCanvas(mousePosX, mousePosY, true, color, size);
-                games.server.draw(gameName, mousePosX, mousePosY, true, color, size);
+                paintCanvas(mousePosX, mousePosY, true, brColor, brSize);
+                games.server.draw(gameName, mousePosX, mousePosY, true, brColor, brSize);
             }
         });
 
@@ -306,8 +374,6 @@
             }
             paint = false;
         });
-
-
     }
 
     games.client.becomeGuesser = function (pattern) {
@@ -316,7 +382,7 @@
         setDrawer(false);
     }
 
-    games.client.becomeOrdinaryPlayer = function() {
+    games.client.becomeOrdinaryPlayer = function () {
         $('#newGameBtn').hide();
     }
 
@@ -324,11 +390,12 @@
         $('#newGameBtn').show();
     }
 
-    games.client.gameOver = function(msg) {
+    games.client.gameOver = function (msg, id) {
         alert(msg);
+        games.server.GoToGame(id);
     }
 
-    games.client.cutLegs = function() {
+    games.client.cutLegs = function () {
         $('#leaveRoomBtn').hide();
         $('#newGameBtn').hide();
         $('#timer').show();
@@ -344,6 +411,10 @@
     };
 
     games.client.clearCanvas = function () {
+        clearCanvasLocal();
+    }
+
+    window.clearCanvasLocal = function () {
         context.clearRect(0, 0, context.canvas.width, context.canvas.height);
         clickX = new Array();
         clickY = new Array();

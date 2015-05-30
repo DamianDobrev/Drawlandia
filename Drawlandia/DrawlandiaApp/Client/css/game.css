@@ -91,18 +91,9 @@
     box-sizing: border-box;
 }
 
-.selectedClr button {
+.selectedClr {
     border: 3px solid rgba(0,0,0,0.5) !important;
 }
-
-.whiteClr button { background: #ffffff; }
-.blueClr button { background: #1795ff; }
-.greenClr button { background: #3cf018; }
-.redClr button { background: #e92020; }
-.yellowClr button { background: #fcff00; }
-.greyClr button { background: #888888; }
-.brownClr button { background: #8d5917; }
-.blackClr button { background: #000000; }
 
 .instruments .size {
     position: absolute;
@@ -114,11 +105,26 @@
 
 .instruments .size li {
     display: inline-block;
-    margin: 0 3px;
     vertical-align: middle;
     height: 30px;
-    line-height: 30px;
-    padding: 0;
+    line-height: 28px;
+    width: 30px;
+    border: 1px solid #7ad4f3;
+    border-right: none;
+    text-align: center;
+    align-content: center;
+    background: #ffffff;
+}
+
+.instruments .size li:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.instruments .size li:last-child {
+    border-right: 1px solid #7ad4f3;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
 
 .instruments .size li button {
@@ -130,15 +136,8 @@
     outline: none;
 }
 
-.size .xs button { width: 6px;height: 6px;border-radius: 6px;}
-.size .s button { width: 12px;height: 12px;border-radius: 12px;}
-.size .m button { width: 18px;height: 18px;border-radius: 18px;}
-.size .l button { width: 24px;height: 24px;border-radius: 24px;}
-.size .xl button { width: 30px;height: 30px;border-radius: 30px;}
-.size .xxl button { width: 36px;height: 36px;border-radius: 36px;}
-
-.size .selectedSize button {
-    background: #000000 !important;
+.selectedSize {
+    background-color: #000000 !important;
 }
 
 #clearCanvas {

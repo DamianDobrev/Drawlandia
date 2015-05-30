@@ -16,6 +16,10 @@ namespace DrawlandiaApp
 
         public DbSet<Word> Words { get; set; }
 
+        public DbSet<BrushColor> BrushColors { get; set; }
+
+        public DbSet<BrushSize> BrushSizes { get; set; } 
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Player>()
