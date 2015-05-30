@@ -240,4 +240,47 @@
     position: absolute;
     right: 0;
     top: 0;
+    display: none;
+}
+
+.disconnectedPlayer {
+    color: #999999 !important;
+    text-decoration: line-through;
+}
+
+.currentWordOrPattern {
+    position: absolute;
+    right: 60px;
+    top: 0;
+    text-align: right;
+    font-family: 'Bubblegum Sans', 'Underdog', cursive;
+    font-size: 24px;
+    color: #ff9600;
+    font-weight: bold;
+}
+
+#currentPattern {
+    letter-spacing: 5px;
+}
+
+#timer {
+    position: absolute;
+    width: 60px;
+    top: 0;
+    right: 0;
+    font-family: 'Bubblegum Sans', 'Underdog', cursive;
+    font-size: 24px;
+    color: #5dc3e7;
+    font-weight: bold;
+    display: none;
+    text-align: right;
+}
+
+.swd {
+    color: #999999;
+    opacity: 0.8;
+    font-family: 'Bubblegum Sans', 'Underdog', cursive;
+    font-size: 22px;
+    letter-spacing: 4px;
+    font-weight: normal;
 }

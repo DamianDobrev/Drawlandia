@@ -8,6 +8,7 @@ namespace DrawlandiaApp.Models
     public enum PlayerState
     {
         InRoom,
-        InStartedGame
+        InStartedGame,
+        Disconnected
     }
 }

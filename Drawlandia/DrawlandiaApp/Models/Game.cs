@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DrawlandiaApp.Models
@@ -38,10 +39,10 @@ namespace DrawlandiaApp.Models
 
         public string CurrentPattern { get; set; }
 
-        public int CurrentTurnNumber { get; set; }
-
         public DateTime EndOfCurrentTurn { get; set; }
 
         public bool WordIsGuessed { get; set; }
+
+        public string TurnsMap { get; set; }
     }
 }

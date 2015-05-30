@@ -1,120 +1,103 @@
-﻿$(function () {
-    //var game = $.connection.gameHub;
-    //var rooms = $.connection.roomsHub;
+﻿//window.initDrawer = function () {
+//    var draw = $.connection.drawHub;
+//    $.connection.hub.start().done(function () {
+        
+//        draw.client.gameDraw = function (){
+//            var context = document.getElementById('gameCanvas').getContext("2d");   
 
-    //$.connection.hub.start().done(function () {
+//            var paint = false;
+//            var mousePosX;
+//            var mousePosY;
+//            var color = "#000000";
 
-    //    window.startGame = function () {
-    //        alert("from js: new game started");
-    //        rooms.server.newGame();
-    //    }
-    //});
+//            var clickX = new Array();
+//            var clickY = new Array();
+//            var clickDrag = new Array();
+//            var colors = new Array();
 
+//            function addClick(x, y, dragging, colorCur) {
+//                clickX.push(x);
+//                clickY.push(y);
+//                clickDrag.push(dragging);
+//                colors.push(colorCur);
+//            }
 
-    //game.client.gameDraw = function (word){
-    //    var context = document.getElementById('gameCanvas').getContext("2d");   
+//            function redraw() {
+//                context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
-    //    var paint = false;
-    //    var mousePosX;
-    //    var mousePosY;
-    //    var color = "#000000";
+//                context.lineJoin = "round";
+//                context.lineWidth = 5;
 
-    //    var clickX = new Array();
-    //    var clickY = new Array();
-    //    var clickDrag = new Array();
-    //    var colors = new Array();
+//                for (var i = 0; i < clickX.length; i++) {
+//                    context.strokeStyle = colors[i];
+//                    context.beginPath();
+//                    if (clickDrag[i] && i) {
+//                        context.moveTo(clickX[i - 1], clickY[i - 1]);
+//                    } else {
+//                        context.moveTo(clickX[i] - 1, clickY[i]);
+//                    }
+//                    context.lineTo(clickX[i], clickY[i]);
+//                    context.closePath();
+//                    context.stroke();
+//                }
+//            }
 
-    //    function addClick(x, y, dragging, colorCur) {
-    //        clickX.push(x);
-    //        clickY.push(y);
-    //        clickDrag.push(dragging);
-    //        colors.push(colorCur);
-    //    }
+//            //mouse interaction functions
 
-    //    function redraw() {
-    //        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+//            $('#gameCanvas').mousedown(function (e) {
+//                var canvasPos = $('#gameCanvas').offset();
+//                mousePosX = e.pageX - this.offsetLeft - Math.round(canvasPos.left);
+//                mousePosY = e.pageY - this.offsetTop - Math.round(canvasPos.top);
 
-    //        context.lineJoin = "round";
-    //        context.lineWidth = 5;
+//                paint = true;
+//                draw.server.draw(mousePosX, mousePosY, false, color);
+//            });
+//            $('#gameCanvas').mousemove(function (e) {
+//                var canvasPos = $('#gameCanvas').offset();
+//                mousePosX = e.pageX - this.offsetLeft - Math.round(canvasPos.left);
+//                mousePosY = e.pageY - this.offsetTop - Math.round(canvasPos.top);
 
-    //        for (var i = 0; i < clickX.length; i++) {
-    //            context.strokeStyle = colors[i];
-    //            context.beginPath();
-    //            if (clickDrag[i] && i) {
-    //                context.moveTo(clickX[i - 1], clickY[i - 1]);
-    //            } else {
-    //                context.moveTo(clickX[i] - 1, clickY[i]);
-    //            }
-    //            context.lineTo(clickX[i], clickY[i]);
-    //            context.closePath();
-    //            context.stroke();
-    //        }
-    //    }
+//                if (paint) {
+//                    draw.server.draw(mousePosX, mousePosY, true, color);
+//                }
+//            });
+//            $('#gameCanvas').mouseup(function (e) {
+//                paint = false;
+//            });
+//            $('#gameCanvas').mouseleave(function (e) {
+//                paint = false;
+//            });
 
-    //    //mouse interaction functions
+//            //instruments
 
-    //    $('#gameCanvas').mousedown(function (e) {
-    //        var canvasPos = $('#gameCanvas').offset();
-    //        mousePosX = e.pageX - this.offsetLeft - Math.round(canvasPos.left);
-    //        mousePosY = e.pageY - this.offsetTop - Math.round(canvasPos.top);
+//            $('#brushColorBlack').click(function (e) {
+//                color = '#000000';
+//            });
+//            $('#brushColorRed').click(function (e) {
+//                color = '#ff0000';
+//            });
+//            $('#brushEraser').click(function (e) {
+//                color = '#ffffff';
+//            });
+//            $('#clearCanvas').click(function (e) {
+//                draw.server.clear();
+//            });
 
-    //        paint = true;
-    //        game.server.draw(mousePosX, mousePosY, false, color);
-    //    });
-    //    $('#gameCanvas').mousemove(function (e) {
-    //        var canvasPos = $('#gameCanvas').offset();
-    //        mousePosX = e.pageX - this.offsetLeft - Math.round(canvasPos.left);
-    //        mousePosY = e.pageY - this.offsetTop - Math.round(canvasPos.top);
+//            //functions called by server
 
-    //        if (paint) {
-    //            game.server.draw(mousePosX, mousePosY, true, color);
-    //        }
-    //    });
-    //    $('#gameCanvas').mouseup(function (e) {
-    //        paint = false;
-    //    });
-    //    $('#gameCanvas').mouseleave(function (e) {
-    //        paint = false;
-    //    });
+//            draw.client.drawRemote = function (xRemote, yRemote, dragRemote, colorCurRemote) {
+//                addClick(xRemote, yRemote, dragRemote, colorCurRemote);
+//                redraw();
+//            };
 
-    //    //instruments
-
-    //    $('#brushColorBlack').click(function (e) {
-    //        color = '#000000';
-    //    });
-    //    $('#brushColorRed').click(function (e) {
-    //        color = '#ff0000';
-    //    });
-    //    $('#brushEraser').click(function (e) {
-    //        color = '#ffffff';
-    //    });
-    //    $('#clearCanvas').click(function (e) {
-    //        game.server.clear();
-    //    });
-
-    //    //functions called by server
-
-    //    game.client.drawRemote = function (xRemote, yRemote, dragRemote, colorCurRemote) {
-    //        addClick(xRemote, yRemote, dragRemote, colorCurRemote);
-    //        redraw();
-    //    };
-
-    //    game.client.clearCanvas = function () {
-    //        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-    //        clickX = new Array();
-    //        clickY = new Array();
-    //        clickDrag = new Array();
-    //        colors = new Array();
-    //        alert("CLEAR CANVAS CALLED FROM SERVER");
-    //    }
-    //}
-
-    //game.client.errorWithMsg = function (msg) {
-    //    alert(msg);
-    //    console.log(msg);
-    //}
-
-    //game.client.getWord = function(word) {
-    //    alert(word);
-    //}
-});
+//            draw.client.clearCanvas = function () {
+//                context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+//                clickX = new Array();
+//                clickY = new Array();
+//                clickDrag = new Array();
+//                colors = new Array();
+//                alert("CLEAR CANVAS CALLED FROM SERVER");
+//            }
+//        }
+//    });
+//};

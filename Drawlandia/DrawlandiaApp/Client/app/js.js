@@ -68,7 +68,11 @@
     function updatePlayerData(players) {
         $('#players ul').html('');
         players.forEach(function (player) {
-            var liToAppend = $('<li><span>' + player.Score + '</span><span>' + player.Name + '</span></li>');
+            var liToAppend = $('<li><span>' + player.Score + '</span><span data-id="' + player.Id + '">' + player.Name + '</span></li>');
+            console.log(player);
+            if (player.PlayerState === 2) {
+                liToAppend = $('<li><span>' + player.Score + '</span><span data-id="' + player.Id + '" class="disconnectedPlayer">' + player.Name + '</span></li>');
+            }
             if (player.IsHisTurn) {
                 liToAppend.attr('class', 'isHisTurn');
             }
@@ -130,6 +134,109 @@
 
             updatePlayerData(game.Players);
 
+            $('#gameName').text(game.Name);
+
+
+            $(function () {
+                var context = document.getElementById('gameCanvas').getContext("2d");
+
+                var paint = false;
+                var mousePosX;
+                var mousePosY;
+                var color = "#000000";
+
+                var clickX = new Array();
+                var clickY = new Array();
+                var clickDrag = new Array();
+                var colors = new Array();
+
+                function addClick(x, y, dragging, colorCur) {
+                    clickX.push(x);
+                    clickY.push(y);
+                    clickDrag.push(dragging);
+                    colors.push(colorCur);
+                }
+
+                function redraw() {
+                    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+
+                    context.lineJoin = "round";
+                    context.lineWidth = 5;
+
+                    for (var i = 0; i < clickX.length; i++) {
+                        context.strokeStyle = colors[i];
+                        context.beginPath();
+                        if (clickDrag[i] && i) {
+                            context.moveTo(clickX[i - 1], clickY[i - 1]);
+                        } else {
+                            context.moveTo(clickX[i] - 1, clickY[i]);
+                        }
+                        context.lineTo(clickX[i], clickY[i]);
+                        context.closePath();
+                        context.stroke();
+                    }
+                }
+
+                //mouse interaction functions
+
+                $('#gameCanvas').mousedown(function(e) {
+                    var canvasPos = $('#gameCanvas').offset();
+                    mousePosX = e.pageX - this.offsetLeft - Math.round(canvasPos.left);
+                    mousePosY = e.pageY - this.offsetTop - Math.round(canvasPos.top);
+
+                    paint = true;
+                    games.server.draw(mousePosX, mousePosY, false, color);
+                });
+                $('#gameCanvas').mousemove(function(e) {
+                    var canvasPos = $('#gameCanvas').offset();
+                    mousePosX = e.pageX - this.offsetLeft - Math.round(canvasPos.left);
+                    mousePosY = e.pageY - this.offsetTop - Math.round(canvasPos.top);
+
+                    if (paint) {
+                        games.server.draw(mousePosX, mousePosY, true, color);
+                    }
+                });
+                $('#gameCanvas').mouseup(function(e) {
+                    paint = false;
+                });
+                $('#gameCanvas').mouseleave(function(e) {
+                    paint = false;
+                });
+
+                //instruments
+
+                $('#brushColorBlack').click(function(e) {
+                    color = '#000000';
+                });
+                $('#brushColorRed').click(function(e) {
+                    color = '#ff0000';
+                });
+                $('#brushEraser').click(function(e) {
+                    color = '#ffffff';
+                });
+                $('#clearCanvas').click(function(e) {
+                    games.server.clear();
+                });
+
+                //functions called by server
+
+                games.client.drawRemote = function (xRemote, yRemote, dragRemote, colorCurRemote) {
+                    addClick(xRemote, yRemote, dragRemote, colorCurRemote);
+                    redraw();
+                };
+
+                games.client.clearCanvas = function () {
+                    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+                    clickX = new Array();
+                    clickY = new Array();
+                    clickDrag = new Array();
+                    colors = new Array();
+                    alert("CLEAR CANVAS CALLED FROM SERVER");
+                }
+            });
+
+
+
             //events
 
             $('#leaveRoomBtn').click(function() {
@@ -176,7 +283,7 @@
     }
 
     games.client.addMessage = function (author, message) {
-        if (previousAuthor != author) {
+        if (previousAuthor !== author) {
             $('#chat div ul').append($('<li class="playerName">').text(author));
         }
         previousAuthor = author;
@@ -189,15 +296,44 @@
         console.log(msg);
     }
 
-    games.client.onGuessedWord = function(msg) {
+    games.client.onGuessedWord = function(msg, players) {
         alert('onGuessedWord(): ' + msg);
+        updatePlayerData(players);
     }
 
     games.client.becomeDrawer = function (word) {
-        alert("I am drawer of this word: " + word);
+        $('#currentWord').show().html('<span class="swd">Draw:</span> ' + word);
+        $('#currentPattern').text('').hide();
     }
 
     games.client.becomeGuesser = function (pattern) {
-        alert("I am guesser of this pattern: " + pattern);
+        $('#currentPattern').show().html('<span class="swd">Guess:</span> ' + pattern);
+        $('#currentWord').text('').hide();
+    }
+
+    games.client.becomeOrdinaryPlayer = function() {
+        $('#newGameBtn').hide();
+    }
+
+    games.client.becomeOwner = function () {
+        $('#newGameBtn').show();
+    }
+
+    games.client.gameOver = function(msg) {
+        alert(msg);
+    }
+
+    games.client.cutLegs = function() {
+        $('#leaveRoomBtn').hide();
+        $('#newGameBtn').hide();
+        $('#timer').show();
+    }
+
+    games.client.unlockCanvas = function() {
+        
+    }
+
+    games.client.lockCanvas = function() {
+        
     }
 });
